@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block title %}Início - Estudantes{% endblock %}
+
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Estudantes</title>
+</head>
+<body>
+    <h1>Lista de Estudantes</h1>
+    <ul>
+        {% for estudante in estudantes %}
+            <li>
+                <a href="{% url 'detalhe_estudante' pk=estudante.pk %}">
+                    {{ estudante.nome }} {{ estudante.sobrenome }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+
+{% endblock %}

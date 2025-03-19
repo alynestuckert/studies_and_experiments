@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Meu Site{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>Meu Site Web</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'admin:index' %}">Ir para Admin</a></li>
+                <li><a href="{% url 'home' %}">Início</a></li>
+                {% comment %} <a href="{% url 'lista_estudantes' %}">Ir para Estudantes</a> {% endcomment %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    {% comment %} <footer>
+        <p>&copy; 2025 Meu Site Web</p>
+    </footer> {% endcomment %}
+</body>
+<footer>
+    <p>&copy; 2025 Meu Site Web</p>
+</footer> 
+</html>
