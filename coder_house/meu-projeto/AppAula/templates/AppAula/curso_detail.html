@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block title %}Detalhe do Curso{% endblock %}
+
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title">{{ curso.curso }} {{ curso.turma }}</h2>
+                <p><strong>Data de Início:</strong> {{ curso.data_inicio }}</p>
+                <p><strong>Data de Término:</strong> {{ curso.data_fim }}</p>
+                <a href="{% url 'lista_cursos' %}" class="btn btn-primary">Voltar para a Lista</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
