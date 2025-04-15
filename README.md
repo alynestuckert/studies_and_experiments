@@ -110,8 +110,8 @@ coder_house/Projeto Final/
 
 ## ✍️ Funcionalidades
 - Cadastro de Estudantes
-- Cadastros de Cursos
-- Cadtastros de Atividades
+- Cadastro de Cursos
+- Cadastro de Atividades
 - Cadastro de usuários
 - Login e senha para responsáveis de postagens
 - Gerenciamento pelo Admin Django
