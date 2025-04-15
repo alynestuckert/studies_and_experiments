@@ -1,25 +1,48 @@
 from django import forms
-from .models import Estudante, Post
-from .models import User
+from .models import Estudante, Post, Curso
+from .models import User, Avatar
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import PasswordChangeForm
 
 class EstudanteForm(forms.ModelForm):
     class Meta:
         model = Estudante
         fields = ['nome', 'sobrenome', 'email']
 
+class CursoForm(forms.ModelForm):
+    class Meta:
+        model = Curso
+        fields = ['curso', 'turma', 'data_inicio', 'data_fim']
+        widgets = {
+            'data_inicio': forms.DateInput(attrs={'type': 'date'}),
+            'data_fim': forms.DateInput(attrs={'type': 'date'}),
+        }
+
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['titulo', 'conteudo', 'autor', 'status']
+        fields = ['titulo', 'conteudo','curso_turma']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'conteudo': forms.Textarea(attrs={'class': 'form-control'}),
+            'curso_turma': forms.Select(attrs={'class': 'form-select'}),
+        }
 
 class PesquisaEstudanteForm(forms.Form):
     termo = forms.CharField(
         label="Pesquisar estudante",
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite um nome ou sobrenome'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite nome ou sobrenome'})
+    )
+
+class PesquisaCursoForm(forms.Form):
+    termo = forms.CharField(
+        label="Pesquisar curso",
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite nome do curso'})
     )
 
 
@@ -52,3 +75,20 @@ class UserRegisterForm(forms.ModelForm):
         if password != password_confirm:
             raise ValidationError('As senhas não coincidem.')
         return password_confirm
+
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']  
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = User
+
+class AvatarForm(forms.ModelForm):
+    class Meta:
+        model = Avatar
+        fields = ['imagem']

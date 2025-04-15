@@ -23,12 +23,14 @@ class Professor(models.Model):
 
 
 class Curso(models.Model):
-    nome = models.CharField(max_length=100)
-    turma = models.IntegerField()
+    curso = models.CharField(max_length=100)
+    turma = models.CharField(max_length=100)
+    data_inicio = models.DateField(null=True, blank=True)
+    data_fim = models.DateField(null=True, blank=True)
 
 
     def __str__(self):
-        return self.nome
+            return f"{self.curso} {self.turma}"
 
 
 class Entrega(models.Model):
@@ -41,11 +43,20 @@ class Entrega(models.Model):
         return self.nome
 
 class Post(models.Model):
-    class Status(models.TextChoices):
-        revisao = 'R', 'Revisao'
-        publicado = 'P', 'Publicado'
+    # class Status(models.TextChoices):
+    #     revisao = 'R', 'Revisao'
+    #     publicado = 'P', 'Publicado'
     titulo = models.CharField(max_length=200)
     conteudo = models.TextField()
+    curso_turma = models.ForeignKey(Curso, on_delete=models.CASCADE, null=True, blank=True)
     data_publicacao = models.DateTimeField(auto_now_add=True)
     autor = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    status = models.CharField(max_length=1, choices=Status.choices, default=Status.revisao)
+    # status = models.CharField(max_length=1, choices=Status.choices, default=Status.revisao)
+
+class Avatar(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    imagem = models.ImageField(upload_to='avatares', null=True, blank=True)
+
+
+    def __str__(self):
+        return f"{self.user.username} - {self.imagem}"

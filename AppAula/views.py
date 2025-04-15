@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Estudante, Professor, Curso, Entrega, Post
+from .models import Estudante, Professor, Curso, Entrega, Post,Avatar
 from django.http import HttpResponse
-from .forms import EstudanteForm, PostForm, PesquisaEstudanteForm, UserRegisterForm
+from .forms import EstudanteForm, PostForm, PesquisaEstudanteForm, UserRegisterForm, CursoForm, PesquisaCursoForm, UserUpdateForm, CustomPasswordChangeForm, AvatarForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib import messages  
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 
 
 
@@ -44,15 +45,42 @@ def criar_estudante(request):
             return redirect('lista_estudantes')  # Redireciona para a lista de estudantes
     else:
         form = EstudanteForm()
-        return render(request, 'AppAula/criar_estudante.html', {'form': form})
-    
 
-def criar_post(request):
+    return render(request, 'AppAula/criar_estudante.html', {'form': form})
+
+def criar_curso(request):
+    if request.method == 'POST':
+        form = CursoForm(request.POST)
+        if form.is_valid():
+            form.save()  # Salva o curso no banco de dados
+            return redirect('lista_cursos')  # Redireciona para a lista de cursos
+    else:
+        form = CursoForm()
+        return render(request, 'AppAula/criar_curso.html', {'form': form})   
+    
+# def criar_post(request):
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             post.autor = request.user  # atribui o autor
+#             post.save()
+#             return redirect('lista_posts')  # redireciona após salvar
+#     else:
+#         form = PostForm()
+#     return render(request, 'criar_post.html', {'form': form})
+
+@login_required
+def criar_post(request):    
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
-            form.save()  # Salva o novo post no banco de dados
-            return redirect('lista_posts')  # Redireciona para a página de lista de posts
+            post = form.save(commit=False)
+            post.autor = request.user  # <- aqui é onde a mágica acontece
+            post.save()
+            return redirect('lista_posts')
+            # form.save()  # Salva o novo post no banco de dados
+            # return redirect('lista_posts')  # Redireciona para a página de lista de posts
     else:
         form = PostForm()
     return render(request, 'AppAula/criar_post.html', {'form': form})
@@ -74,6 +102,30 @@ def pesquisa_estudante(request):
 
     return render(request, 'AppAula/pesquisa_estudante.html', {'form': form, 'resultados': resultados})
 
+def pesquisa_curso(request):
+    resultados = None
+    form = PesquisaCursoForm(request.GET)  
+
+
+    if form.is_valid():
+        termo = form.cleaned_data.get('termo')
+        if termo:
+            resultados = Curso.objects.filter(
+                curso__icontains=termo
+            ) | Curso.objects.filter(
+                turma__icontains=termo
+            )
+
+    return render(request, 'AppAula/pesquisa_curso.html', {'form': form, 'resultados': resultados})
+
+def lista_cursos(request):
+    cursos = Curso.objects.all()
+    return render(request, 'AppAula/curso_list.html', {'cursos': cursos })
+
+
+def detalhe_curso(request, pk):
+    curso = get_object_or_404(Curso, pk=pk)
+    return render(request, 'AppAula/curso_detail.html', {'curso': curso})
 
 @login_required
 def atualizar_post(request, id):
@@ -138,7 +190,9 @@ class post_update_view(UpdateView):
         return reverse_lazy('lista_posts_cvb')  # Redireciona para a lista de posts após a atualização
     
 
+# class post_delete_view(LoginRequiredMixin,DeleteView):
 class post_delete_view(DeleteView):
+
     model = Post
     template_name = 'AppAula/post_delete.html'  # Template que perguntará se o usuário quer deletar o post
     context_object_name = 'post'  # Isso vai permitir acessar o objeto 'post' no template
@@ -180,3 +234,56 @@ def registro(request):
 
 
     return render(request, 'AppAula/registration.html', {'form': form})
+
+@login_required
+def perfil(request):
+    return render(request, 'AppAula/perfil.html', {'user': request.user})
+
+
+
+
+@login_required
+def editar_perfil(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+
+
+        if user_form.is_valid() and password_form.is_valid():
+            user_form.save()
+            password_form.save()
+            update_session_auth_hash(request, request.user)  # Mantém o usuário logado após alteração de senha
+            messages.success(request, "Perfil e senha atualizados com sucesso!")
+            return redirect('perfil')
+        else:
+            messages.error(request, "Por favor, corrija os erros abaixo.")
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(user=request.user)
+
+
+    return render(request, 'AppAula/editar_perfil.html', {
+        'user_form': user_form,
+        'password_form': password_form
+    })
+
+@login_required
+def upload_avatar(request):
+    avatar, created = Avatar.objects.get_or_create(user=request.user)  # Tenta obter ou cria um novo avatar
+
+
+    if request.method == 'POST':
+        form = AvatarForm(request.POST, request.FILES, instance=avatar)
+        if form.is_valid():
+            form.save()
+            return redirect('perfil')  # Redireciona para o perfil
+
+
+    else:
+        form = AvatarForm(instance=avatar)
+
+
+    return render(request, 'AppAula/upload_avatar.html', {'form': form})
+
+def sobre(request):
+    return render(request, 'AppAula/sobre.html')

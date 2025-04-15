@@ -18,8 +18,9 @@
 </head>
 <body>
     <h1>{{ post.titulo }}</h1>
-    <p><strong>Status:</strong> {{ post.get_status_display }}</p>
+    <!-- <p><strong>Status:</strong> {{ post.get_status_display }}</p> -->
     <p><strong>Autor:</strong> {{ post.autor }}</p>
+    <p><strong>Curso:</strong> {{ post.curso_turma }}</p>
     <p><strong>Publicado em:</strong> {{ post.data_publicacao }}</p>
     <hr>
     <p>{{ post.conteudo }}</p>

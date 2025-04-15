@@ -11,7 +11,7 @@ admin.site.register(Entrega)
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'autor', 'status', 'data_publicacao']
-    list_filter = [ 'autor', 'status']
+    list_display = ['titulo', 'autor', 'data_publicacao']
+    list_filter = [ 'autor']
     raw_id_fields = ['autor']
     ordering = ['-data_publicacao']

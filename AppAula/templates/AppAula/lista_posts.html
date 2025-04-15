@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container mt-4">
-        <h1 class="mb-4">Lista de Posts</h1>
+        <h1 class="mb-4">Lista de Atividades</h1>
 
 
         {% if posts %}
@@ -17,7 +17,6 @@
                             <a href="{% url 'detalhe_post' post.id %}" class="text-decoration-none">
                                 {{ post.titulo }}
                             </a>
-                            - <span class="badge bg-info">{{ post.get_status_display }}</span>
                             <br>
                             <small class="text-muted">Publicado em: {{ post.data_publicacao|date:"d/m/Y H:i" }}</small>
                         </div>
@@ -32,6 +31,6 @@
             <p class="alert alert-warning">Nenhum post encontrado.</p>
         {% endif %}
        
-        <a href="{% url 'criar_post' %}" class="btn btn-success mt-3">Criar Novo Post</a>
+        <a href="{% url 'criar_post' %}" class="btn btn-success mt-3">Criar Nova Atividade</a>
     </div>
 {% endblock %}
